@@ -77,4 +77,4 @@ jobs:
       - name: Lint Kubernetes manifests with KubeLinter
         uses: stackrox/kube-linter-action@v1.0.7
         with:
-          manifests: ./k8s
+          directory: ./k8s
