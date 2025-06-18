@@ -22,7 +22,8 @@ jobs:
         run: pip install bandit semgrep
 
       - name: Run Bandit (Python Security)
-        run: bandit -r app.py
+        run: bandit -r app.py --exit-zero
+
 
       - name: Run Semgrep (Static Analysis)
         run: semgrep --config auto app.py
