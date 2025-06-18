@@ -50,12 +50,19 @@ jobs:
       - name: Scan Docker image with Trivy
         run: trivy image upload-server:ci
 
-      - name: Generate SBOM with Syft
-        uses: anchore/sbom-action@v0.14.3
+      # - name: Generate SBOM with Syft
+      #   uses: anchore/sbom-action@v0.14.3
+      #   with:
+      #     image: upload-server:ci
+      #     format: spdx-json
+      #     output-file: sbom.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v3
         with:
-          image: upload-server:ci
-          format: spdx-json
-          output-file: sbom.json
+          name: sbom
+          path: sbom.json
+    
 
       - name: Scan SBOM with Grype
         uses: anchore/scan-action@v3
