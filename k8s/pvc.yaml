@@ -1,5 +1,4 @@
 # pvc.yaml
-# Deploy
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:

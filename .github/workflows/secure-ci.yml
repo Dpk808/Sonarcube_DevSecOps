@@ -24,7 +24,6 @@ jobs:
       - name: Run Bandit (Python Security)
         run: bandit -r app.py --exit-zero
 
-
       - name: Run Semgrep (Static Analysis)
         run: semgrep --config auto app.py
 
@@ -56,15 +55,13 @@ jobs:
           image: upload-server:ci
           format: spdx-json
           output-file: sbom.json
-          artifact-name: sbom-upload-server-ci
-          
+          upload-artifact: false  # disables deprecated upload
 
-      - name: Upload SBOM artifact
+      - name: Upload SBOM manually (compatible with new GitHub rules)
         uses: actions/upload-artifact@v4
         with:
           name: sbom
           path: sbom.json
-    
 
       - name: Scan SBOM with Grype
         uses: anchore/scan-action@v3
