@@ -56,6 +56,8 @@ jobs:
           image: upload-server:ci
           format: spdx-json
           output-file: sbom.json
+          artifact-name: sbom-upload-server-ci
+          
 
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@v4
