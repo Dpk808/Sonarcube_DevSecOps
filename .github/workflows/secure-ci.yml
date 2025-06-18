@@ -1,0 +1,72 @@
+name: Build and Secure CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install Python dependencies
+        run: pip install bandit semgrep
+
+      - name: Run Bandit (Python Security)
+        run: bandit -r app.py
+
+      - name: Run Semgrep (Static Analysis)
+        run: semgrep --config auto app.py
+
+      - name: Install Gitleaks (Secrets Scanner)
+        run: |
+          curl -sSL https://github.com/gitleaks/gitleaks/releases/download/v8.18.1/gitleaks_8.18.1_linux_x64.tar.gz | tar -xz
+          sudo mv gitleaks /usr/local/bin/
+
+      - name: Run Gitleaks
+        run: gitleaks detect --source . --verbose --redact
+
+      - name: Install Trivy (Container Vulnerability Scanner)
+        run: |
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb stable main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Build Docker image
+        run: docker build -t upload-server:ci .
+
+      - name: Scan Docker image with Trivy
+        run: trivy image upload-server:ci
+
+      - name: Generate SBOM with Syft
+        uses: anchore/sbom-action@v0.14.3
+        with:
+          image: upload-server:ci
+          format: spdx-json
+          output-file: sbom.json
+
+      - name: Scan SBOM with Grype
+        uses: anchore/scan-action@v3
+        with:
+          sbom: sbom.json
+
+      - name: Lint Dockerfile with Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+      - name: Lint Kubernetes manifests with KubeLinter
+        uses: stackrox/kube-linter-action@v0.2.5
+        with:
+          manifests: ./k8s

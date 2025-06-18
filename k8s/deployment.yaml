@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: upload-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: upload-server
+  template:
+    metadata:
+      labels:
+        app: upload-server
+    spec:
+      containers:
+        - name: upload-server
+          image: deepakk2212/upload-server:v2
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: upload-volume
+              mountPath: /uploads
+      volumes:
+        - name: upload-volume
+          persistentVolumeClaim:
+            claimName: upload-pvc
