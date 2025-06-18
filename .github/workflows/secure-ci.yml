@@ -67,6 +67,6 @@ jobs:
           dockerfile: Dockerfile
 
       - name: Lint Kubernetes manifests with KubeLinter
-        uses: stackrox/kube-linter-action@v0.2.5
+        uses: stackrox/kube-linter-action@v1.0.7
         with:
           manifests: ./k8s
