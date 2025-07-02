@@ -1,98 +1,149 @@
-# PV-Kubernetes-Begineer.2
 
+# 🔐 Secure Upload Server - DevSecOps Pipeline
 
+A secure, containerized **Flask-based file upload server** built with a modern **DevSecOps pipeline** using GitHub Actions, Docker, and Kubernetes.
 
-PVC and PV in Kubernetes
+## 🚀 Overview
 
-Creating a file upload server deployed on Kubernetes using a Flask application along with PV enabled
+This project demonstrates how to integrate **security checks** and **automation** throughout the CI/CD process, from **static analysis** to **container vulnerability scanning** to **SBOM generation and analysis**.
 
-The uploaded files are stored persistently using Persistent Volumes (PV) and Persistent Volume Claims (PVC), ensuring that files persist even if the pod is restarted or rescheduled. Below is the summary of the project:
+> CI/CD powered by **GitHub Actions**
 
-1. Initiating Minikube:
+---
 
-  **_minikube start_**
+## 🧱 Tech Stack
 
+| Area              | Tool                             |
+|-------------------|----------------------------------|
+| Language          | Python (Flask)                   |
+| Containerization  | Docker                           |
+| Orchestration     | Kubernetes (with YAML manifests) |
+| CI/CD             | GitHub Actions                   |
+| SAST              | Bandit, Semgrep                  |
+| Secrets Scanning  | Gitleaks                         |
+| Image Scanning    | Trivy                            |
+| SBOM              | Syft (generate), Grype (scan)    |
+| Docker Linting    | Hadolint                         |
+| K8s Linting       | KubeLinter                       |
 
+---
 
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/1.%20Started%20minikube.png)
+## 📂 Folder Structure
 
+```
+upload-server/
+├── app.py                   # Flask application
+├── requirements.txt
+├── Dockerfile               # Flask app container
+├── k8s/                     # Kubernetes manifests
+│   ├── deployment.yaml
+│   └── service.yaml
+└── .github/workflows/
+    └── ci-cd.yaml           # GitHub Actions workflow
+```
 
+---
 
+## 🔁 CI/CD Workflow Summary
 
+**Trigger**: On push to `main` or any Pull Request
 
+### 🔐 Security Checks in CI:
+- ✅ **Bandit**: Python security linter
+- ✅ **Semgrep**: Pattern-based SAST
+- ✅ **Gitleaks**: Secrets scanning
+- ✅ **Hadolint**: Dockerfile best practices
+- ✅ **KubeLinter**: Kubernetes YAML linting
+- ✅ **Trivy**: Docker image vulnerability scanning
+- ✅ **Syft**: SBOM generation (SPDX format)
+- ✅ **Grype**: Scan SBOM for vulnerabilities
 
+---
 
+## 🔧 How to Use
 
+### 🐳 Build Docker Image
 
+```bash
+docker build -t upload-server:ci .
+```
 
+### 🧪 Run Locally
 
+```bash
+docker run -p 5000:5000 upload-server:ci
+```
 
+Access at: `http://localhost:5000`
 
+### 🚀 Deploy to Kubernetes
 
+Apply the manifests in the `k8s/` directory:
 
+```bash
+kubectl apply -f k8s/
+```
 
+---
 
-2.Building the Docker Image:  
+## ✅ GitHub Actions Workflow Highlights
 
-  **_docker build -t deepakk2212/upload-server:v2 ._**
+```yaml
+# .github/workflows/ci-cd.yaml
+name: Build and Secure CI
 
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/2.%20Building%20the%20Docker%20Image.png)
+on:
+  push:
+    branches: [main]
+  pull_request:
+```
 
+The pipeline runs:
 
-3.Pushing the docker image to dockerhub:
+- Python linting & security analysis
+- Secrets detection
+- Docker image build and scan
+- SBOM creation and scanning
+- Lint checks for Docker and K8s files
 
-  **_docker push deepakk2212/upload-server:v2_**
+---
 
+## 📝 SBOM Example
 
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/3.%20Pushed%20the%20docker%20image%20to%20dockerhub.png)
+An SPDX-formatted Software Bill of Materials (`sbom.json`) is generated using Syft and stored in the build artifacts. This helps identify all open source dependencies used in the image.
 
+---
 
-4.Applying the yaml files: (deployment.yaml, service.yaml and pvc.yaml)
+## 📊 Reports and Results
 
-  **_kubectl apply -f pvc.yaml
-  kubectl apply -f deployment.yaml
-  kubectl apply -f service.yaml_**
+| Tool      | Output |
+|-----------|--------|
+| Bandit    | CLI log with high/medium issues |
+| Semgrep   | Security and code quality alerts |
+| Gitleaks  | Redacted secrets report |
+| Trivy     | Vulnerabilities by severity |
+| Grype     | SBOM vulnerability match results |
+| Hadolint  | Dockerfile best-practice issues |
+| KubeLinter| Misconfigured Kubernetes YAMLs |
 
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/4.%20Applied%20the%20yaml%20files.png)
+---
 
+## 📌 Best Practices Implemented
 
-5.Port forwarding to the localhost:8080
+- 🧪 Shift-left security in CI/CD
+- ✅ Early detection of insecure code & secrets
+- 🧱 Secure container image creation
+- 📦 SBOM generation for supply chain transparency
+- ⛑ Defense-in-depth with multiple tools
 
-  **_kubectl port-forward svc/upload-server-service 8080:80_**
+---
 
+## 📃 License
 
+MIT License
 
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/4.5%20Port%20forwarding.png)
 
 
+## 🔐 Built With DevSecOps Principles
 
-
-6.File-Uploadable Webpage:
-
-  **_http://localhost:8080_**
-
-
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/5.%20Uploadable%20Webpage.png)
-
-
-
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/6.%20File%20is%20uploaded.png)
-
-
-
-File named ‘kubernetes_image.png’ has been uploaded to the webpage.
-
-
-On clicking the file name: the file can be accessed:
-
-
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/7.%20seeing%20the%20uploaded%20image.png)
-
-
-
-And this is where the files uploaded to the deployed web app stays (in PVC) :
-
-  _**kubectl get pvc**_
-
-
-![image alt](https://github.com/Dpk808/PV-Kubernetes-Begineer.2/blob/main/Screenshots/8.%20This%20is%20where%20the%20uploaded%20files%20stay.png)
+> Automate early. Secure always. Ship confidently.
